@@ -1,0 +1,15 @@
+{
+  "name": "node-sass",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "scss": "node-sass --watch ./scss --recursive --output C:\\<path to theme css folder being watched by themekit\\"
+  },
+  "author": "bs",
+  "license": "ISC",
+  "dependencies": {
+    "node-sass": "^4.14.1"
+  }
+}
