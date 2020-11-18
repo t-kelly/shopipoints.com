@@ -8,7 +8,7 @@
     "deploy": "node scripts/deploy.js",
     "deploy:production": "node scripts/deploy.js -- --env=production --allowLive=true",
     "watch": "node scripts/watch.js",
-    "lint:js": "eslint ./scripts"
+    "lint:js": "eslint ./**/*.js"
   },
   "repository": {
     "type": "git",
@@ -25,15 +25,35 @@
   },
   "homepage": "https://github.com/t-kelly/shopipoints.com#readme",
   "devDependencies": {
+    "@babel/core": "^7.12.3",
+    "@babel/eslint-parser": "^7.12.1",
+    "@babel/plugin-syntax-top-level-await": "^7.12.1",
     "@shopify/eslint-plugin": "^39.0.3",
     "@shopify/themekit": "^1.1.6",
     "eslint": "^7.13.0",
     "yargs": "^16.1.1"
   },
+
   "eslintConfig": {
-    "env": {
-        "browser": true
-    },
-    "extends": "plugin:@shopify/esnext"
+    "@comment entends": "By default we use Shopify's esnext rules to style our JavaScript",
+    "extends": ["plugin:@shopify/esnext"],
+
+    "@comment overrides": "We need the following override to handle the Node v14+ syntax that we use in our NPM scripts, e.g. Top Level Awaits",
+    "overrides": [
+      {
+        "extends": ["plugin:@shopify/node"],
+        "files": ["./scripts/*.js"],
+        "parser": "@babel/eslint-parser",
+        "parserOptions": {
+          "ecmaVersion": 2021,
+          "sourceType": "module"
+        }
+      }
+    ]
+  },
+
+  "@comment babel": "We only need babel because ESLint currently does not support TopLevelAwait",
+  "babel": {
+    "plugins": ["@babel/plugin-syntax-top-level-await"]
   }
 }
