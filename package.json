@@ -3,8 +3,11 @@
   "version": "1.0.0",
   "description": "Moar Shopipoints",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "deploy": "node scripts/deploy.js",
+    "deploy:production": "node scripts/deploy.js -- --env=production --allowLive=true",
+    "watch": "node scripts/watch.js"
   },
   "repository": {
     "type": "git",
@@ -19,5 +22,9 @@
   "bugs": {
     "url": "https://github.com/t-kelly/shopipoints.com/issues"
   },
-  "homepage": "https://github.com/t-kelly/shopipoints.com#readme"
+  "homepage": "https://github.com/t-kelly/shopipoints.com#readme",
+  "devDependencies": {
+    "@shopify/themekit": "^1.1.6",
+    "yargs": "^16.1.1"
+  }
 }
