@@ -34,11 +34,10 @@
     "yargs": "^16.1.1"
   },
 
+  "@comment eslintConfig": "By default we use Shopify's esnext rules to style our JavaScript. We need the following override to handle the Node v14+ syntax that we use in our NPM scripts, e.g. Top Level Awaits",
   "eslintConfig": {
-    "@comment entends": "By default we use Shopify's esnext rules to style our JavaScript",
     "extends": ["plugin:@shopify/esnext"],
-
-    "@comment overrides": "We need the following override to handle the Node v14+ syntax that we use in our NPM scripts, e.g. Top Level Awaits",
+    
     "overrides": [
       {
         "extends": ["plugin:@shopify/node"],
