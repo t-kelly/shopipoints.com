@@ -1,4 +1,7 @@
 // Put your application javascript here
-const someFunction = function(){
-    const something = false
+function someFunction() {
+  const something = false;
+  return something;
 }
+
+someFunction();
