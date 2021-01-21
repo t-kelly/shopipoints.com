@@ -1,7 +1,6 @@
 name: Lint All The Things
 
 on:
-  push:
   pull_request:
 
 jobs:
