@@ -31,6 +31,7 @@
     "@shopify/eslint-plugin": "^39.0.3",
     "@shopify/themekit": "^1.1.6",
     "eslint": "^7.13.0",
+    "node-fetch": "^2.6.1",
     "yargs": "^16.1.1"
   },
 
