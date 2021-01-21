@@ -1,9 +1,9 @@
 import fetch from 'node-fetch';
-import yargs from 'yargs'
+import yargs from 'yargs';
 
-const {name,store,token} = yargs(process.argv).argv;
+const {name, store, token} = yargs(process.argv).argv;
 
-async function createEmptyTheme(name) {
+async function createEmptyTheme() {
   const data = {theme: {name}};
 
   const res = await fetch(`https://${store}/admin/api/2020-10/themes.json`, {
@@ -20,7 +20,12 @@ async function createEmptyTheme(name) {
   return theme;
 }
 
-const theme = await createEmptyTheme(name);
+createEmptyTheme()
+  .then((theme) => {
+  // Output theme id so that we can use it to generate a preview URL
+    return console.log(theme.id);
+  }).catch((error) => {
+    console.error(error);
+  });
 
-// Output theme id so that we can use it to generate a preview URL
-console.log(theme.id);
+
