@@ -3,5 +3,8 @@ import yargs from 'yargs';
 
 const {env = 'development', allowLive = false} = yargs(process.argv).argv;
 
-await themeKit.command('deploy', {env, allowLive});
-await themeKit.command('watch', {env, allowLive});
+async function deploy() {
+  await themeKit.command('deploy', {env, allowLive});
+}
+
+deploy();
