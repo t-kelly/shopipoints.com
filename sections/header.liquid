@@ -1,0 +1,65 @@
+<header>
+  {% if request.page_type == 'index' %}<h1>{% else %}<div>{% endif %}
+    <a href="{{ routes.root_url }}">
+      {%- if section.settings.logo != blank -%}
+        {% capture image_size %}{{ section.settings.logo_max_width }}x{% endcapture %}
+        <img srcset="{{ section.settings.logo | img_url: image_size }} 1x, {{ section.settings.logo | img_url: image_size, scale: 2 }} 2x"
+          src="{{ section.settings.logo | img_url: image_size }}"
+          loading="lazy"
+          alt="{{ section.settings.logo.alt | default: shop.name }}">
+      {%- else -%}
+        {{- shop.name -}}
+      {%- endif -%}
+    </a>
+  {% if request.page_type == 'index' %}</h1>{% else %}</div>{% endif %}
+
+  <nav role="navigation">
+    <ul>
+      {% for link in linklists.main-menu.links %}
+        {% assign child_list_handle = link.title | handleize %}
+        {% if linklists[child_list_handle].links != blank %}
+          <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+          [{% for childlink in linklists[child_list_handle].links %}
+            <li><a href="{{ childlink.url }}">{{ childlink.title | escape }}</a></li>
+          {% endfor %}]
+        {% else %}
+          <li>{{ link.title | link_to: link.url }}</li>
+        {% endif %}
+      {% endfor %}
+      
+      {% capture cart_text %}
+      {% if cart.item_count > 0 %}
+        Cart ({{ cart.item_count }})
+      {% else %}
+        Cart
+      {% endif %}
+      {% endcapture %}
+      
+      <li>{{ cart_text | link_to: routes.cart_url }}</li>
+
+      {% if shop.customer_accounts_enabled %}
+        {% if customer %}
+        <li>{{ 'Account' | link_to: routes.account_url }}</li>
+        <li>{{ 'Log Out'  | link_to: routes.acount_logout_url }}</li>
+        {% else %}
+          <li>{{ 'Log in' | link_to: routes.account_login_url }}</li>
+          <li>{{ 'Register' | link_to: routes.account_register_url }}</li>
+        {% endif %}
+      {% endif %}
+    </ul>
+  </nav>
+
+</header>
+
+{% schema %}
+{
+  "name": "Header",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo"
+    }
+  ]
+}
+{% endschema %}
