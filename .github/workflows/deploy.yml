@@ -1,0 +1,23 @@
+name: Deploy to shopify
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+  #    - name: Build
+  #      run: |
+  #        npm install
+  #        npm run-script build
+      - name: Shopify
+        uses: pgrimaud/action-shopify@master
+        env:
+          SHOPIFY_PASSWORD: ${{ secrets.SHOPIFY_PASSWORD }}
+          SHOPIFY_STORE_URL: ${{ secrets.SHOPIFY_STORE_URL }}
+          SHOPIFY_THEME_ID: ${{ secrets.SHOPIFY_THEME_ID }}
+          THEME_PATH: ${{ secrets.THEME_PATH }}
+        with:
+          args: --ignored-file=config/settings_data.json
