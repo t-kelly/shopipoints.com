@@ -1,0 +1,65 @@
+<section>
+  <div data-embed-stream-container>
+    <iframe
+      src='https://player.twitch.tv/?channel={{ section.settings.twitch_channel }}&parent=shopipoints.com&parent=shopipoints.myshopify.com'
+      height="300"
+      width="400"
+      allowfullscreen>
+    </iframe>
+  </div>
+</section>
+
+<script>
+  const channelName = '{{ section.settings.twitch_channel }}';
+  const selectors = {
+    embedStreamContainer: '[data-embed-stream-container]'
+  }
+  const headers = {
+    'Accept': 'application/vnd.twitchtv.v5+json',
+    'Client-ID': 'd2kogdjt69vkm4jj9r8qc4aa25f72t'
+  };
+
+  async function fetchChannelId(name) {
+    const response = await fetch(`https://api.twitch.tv/kraken/search/channels?query=${name}`, {headers})
+    const {channels} = await response.json();
+
+    if (channels.length === 0) {
+      throw new Error('No channels were found with the provided name')
+    }
+
+    return channels[0]._id;
+  }
+
+  async function fetchStream(channelId) {
+    const response = await fetch(`https://api.twitch.tv/kraken/streams/${channelId}`, {headers})
+    const {stream} = await response.json();
+    return stream;
+  }
+
+  fetchChannelId(channelName)
+  .then(fetchStream)
+  .then((stream) => {
+    if (stream !== null) {
+      document.querySelector(selectors.embedStreamContainer).prepend(`Hey we've detected if our stream is live or not!`);
+    }    
+  })
+</script>
+
+{% schema %}
+  {
+    "name": "Hero",
+    "settings": [
+      {
+        "type": "text",
+        "id": "twitch_channel",
+        "label": "Twitch Channel"
+      }
+    ],
+    "presets": [
+      {
+        "category": "Sections",
+        "name": "Hero"
+      }
+    ]
+  }
+{% endschema %}
