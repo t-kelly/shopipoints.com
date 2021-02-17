@@ -9,14 +9,17 @@
   </div>
 </section>
 
-<script>
+{% javascript %}
   const channelName = '{{ section.settings.twitch_channel }}';
+  const clientId = '{{ section.settings.api_client_id }}';
+
   const selectors = {
     embedStreamContainer: '[data-embed-stream-container]'
   }
+
   const headers = {
     'Accept': 'application/vnd.twitchtv.v5+json',
-    'Client-ID': 'd2kogdjt69vkm4jj9r8qc4aa25f72t'
+    'Client-ID': clientId
   };
 
   async function fetchChannelId(name) {
@@ -27,7 +30,7 @@
       throw new Error('No channels were found with the provided name')
     }
 
-    return channels[0]._id;
+    return channels.shift()._id;
   }
 
   async function fetchStream(channelId) {
@@ -42,8 +45,8 @@
     if (stream !== null) {
       document.querySelector(selectors.embedStreamContainer).prepend(`Hey we've detected if our stream is live or not!`);
     }    
-  })
-</script>
+  })  
+{% endjavascript %}}
 
 {% schema %}
   {
@@ -52,7 +55,12 @@
       {
         "type": "text",
         "id": "twitch_channel",
-        "label": "Twitch Channel"
+        "label": "Twitch Channel Name"
+      },
+      {
+        "type": "text",
+        "id": "api_client_id",
+        "label": "Twitch API Client ID"
       }
     ],
     "presets": [
