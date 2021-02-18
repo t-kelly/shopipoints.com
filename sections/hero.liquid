@@ -1,52 +1,94 @@
-<section>
-  <div data-embed-stream-container>
-    <iframe
-      src='https://player.twitch.tv/?channel={{ section.settings.twitch_channel }}&parent=shopipoints.com&parent=shopipoints.myshopify.com'
-      height="300"
-      width="400"
-      allowfullscreen>
-    </iframe>
+<hero-section data-section-id="{{ section.id }}" data-channel-name="{{ section.settings.twitch_channel }}" data-client-id="{{ section.settings.api_client_id }}">
+  <h2>Welcome to Shopipoints!</h2>
+  
+  <div class="hide" data-hero-content-live>
+    <p>Our Twitch stream is currently live!</p>
+    <button data-watch-button>Watch the stream</button>
   </div>
-</section>
+
+  <div data-embed-stream-container></div>
+
+  <style>
+    [data-section-id="{{ section.id }}"] {
+      --title-color: {{ section.settings.title_color }}
+    }
+  </style>
+</hero-section>
+
+{% stylesheet %}
+  .hide {
+    display: none;
+  }
+
+  hero-section h2 {
+    color: var(--title-color);
+  }
+{% endstylesheet %}
 
 {% javascript %}
-  const channelName = '{{ section.settings.twitch_channel }}';
-  const clientId = '{{ section.settings.api_client_id }}';
-
-  const selectors = {
-    embedStreamContainer: '[data-embed-stream-container]'
-  }
-
-  const headers = {
-    'Accept': 'application/vnd.twitchtv.v5+json',
-    'Client-ID': clientId
-  };
-
-  async function fetchChannelId(name) {
-    const response = await fetch(`https://api.twitch.tv/kraken/search/channels?query=${name}`, {headers})
-    const {channels} = await response.json();
-
-    if (channels.length === 0) {
-      throw new Error('No channels were found with the provided name')
+  class HeroSection extends HTMLElement {
+    selectors = {
+      embedStreamContainer: '[data-embed-stream-container]',
+      liveContentContainer: '[data-hero-content-live]',
+      watchButton: '[data-watch-button]'
     }
 
-    return channels.shift()._id;
+    constructor() {
+      super();
+
+      this.fetchChannelId(this.dataset.channelName)
+        .then(this.fetchStream.bind(this))
+        .then(this.showWatchContent.bind(this))  
+    }
+    
+    get twitchFetchHeaders() {
+      return { 
+        headers: {
+          'Accept': 'application/vnd.twitchtv.v5+json',
+          'Client-ID': this.dataset.clientId
+        }
+      }
+    }
+
+    async fetchChannelId(name) {
+      const response = await fetch(`https://api.twitch.tv/kraken/search/channels?query=${name}`, { ...this.twitchFetchHeaders });
+      const {channels} = await response.json();
+  
+      if (channels && channels.length === 0) {
+        throw new Error('No channels were found with the provided name')
+      }
+  
+      return channels.shift()._id;
+    }
+
+    async fetchStream(channelId) {
+      const response = await fetch(`https://api.twitch.tv/kraken/streams/${channelId}`, { ...this.twitchFetchHeaders });
+      const {stream} = await response.json();
+      return stream;
+    }
+
+    showWatchContent(stream) {
+      if (stream === null) return;
+  
+      this.querySelector(selectors.liveContentContainer).classList.remove('hide');
+      this.querySelector(selectors.watchButton).addEventListener('click', this.insertStream.bind(this));
+    } 
+  
+    insertStream() {
+      const container = this.querySelector(selectors.embedStreamContainer);
+      const iframe = document.createElement('iframe');
+  
+      iframe.setAttribute('src', `https://player.twitch.tv/?channel=${this.dataset.channelName}&parent=shopipoints.com&parent=shopipoints.myshopify.com`);
+      iframe.setAttribute('width', 400);
+      iframe.setAttribute('height', 300);
+      iframe.setAttribute('allowfullscreen', true);
+  
+      container.append(iframe);
+    }
   }
 
-  async function fetchStream(channelId) {
-    const response = await fetch(`https://api.twitch.tv/kraken/streams/${channelId}`, {headers})
-    const {stream} = await response.json();
-    return stream;
-  }
-
-  fetchChannelId(channelName)
-  .then(fetchStream)
-  .then((stream) => {
-    if (stream !== null) {
-      document.querySelector(selectors.embedStreamContainer).prepend(`Hey we've detected if our stream is live or not!`);
-    }    
-  })  
-{% endjavascript %}}
+  customElements.define('hero-section', HeroSection);
+{% endjavascript %}
 
 {% schema %}
   {
@@ -61,6 +103,12 @@
         "type": "text",
         "id": "api_client_id",
         "label": "Twitch API Client ID"
+      },
+      {
+        "type": "color",
+        "id": "title_color",
+        "label": "Title Color",
+        "default": "#ff1493"
       }
     ],
     "presets": [
