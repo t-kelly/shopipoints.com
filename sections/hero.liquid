@@ -6,6 +6,11 @@
     <button data-watch-button>Watch the stream</button>
   </div>
 
+  <div class="hide" data-hero-content-not-live>
+    <p>Our Twitch stream is not currently live!</p>
+    <a href="#">Check out the previous episodes</a>
+  </div>
+
   <div data-embed-stream-container></div>
 
   <style>
@@ -31,6 +36,7 @@
     selectors = {
       embedStreamContainer: '[data-embed-stream-container]',
       liveContentContainer: '[data-hero-content-live]',
+      notLiveContentContainer: '[data-hero-content-not-live]',
       watchButton: '[data-watch-button]' 
     }
 
@@ -69,14 +75,16 @@
     }
 
     showWatchContent(stream) {
-      if (stream === null) return;
-  
-      this.querySelector(selectors.liveContentContainer).classList.remove('hide');
-      this.querySelector(selectors.watchButton).addEventListener('click', this.insertStream.bind(this));
+      if (stream === null) {
+        this.querySelector(this.selectors.notLiveContentContainer).classList.remove('hide'); 
+      } else {
+        this.querySelector(this.selectors.liveContentContainer).classList.remove('hide');
+        this.querySelector(this.selectors.watchButton).addEventListener('click', this.insertStream.bind(this));
+      }
     } 
   
     insertStream() {
-      const container = this.querySelector(selectors.embedStreamContainer);
+      const container = this.querySelector(this.selectors.embedStreamContainer);
       const iframe = document.createElement('iframe');
   
       iframe.setAttribute('src', `https://player.twitch.tv/?channel=${this.dataset.channelName}&parent=shopipoints.com&parent=shopipoints.myshopify.com`);
