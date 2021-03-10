@@ -1,0 +1,104 @@
+{%- comment -%}
+  1. The name of Custom Elements need to have a hyphen, e.g. <example-section>
+  2. Make our section uniquely identifiable for a CSS selector (see below), e.g. data-section-id="{{section.id}}"
+  3. Pass section settings to JS with data attributes, e.g. data-enable-random-color={{section.settings.enable_random_color}}
+{%- endcomment -%}
+<example-section data-section-id="{{section.id}}" data-enable-random-color={{section.settings.enable_random_color}}>
+  <h1>{{section.settings.title}}</h1>
+
+  {%- comment -%}
+    We only want this button to be visible if our JS works.
+  {%- endcomment -%}
+  <button data-button style="display: none;">Change Background Color</button>
+</example-section>
+
+{%- comment -%}
+  Include styles that are specific to the instance of the section. 
+  This enables us to have multiple instances of the same section, each with their own unique background color
+{%- endcomment -%}
+
+<style>
+  [data-section-id="{{ section.id }}"] {
+    --background-color: {{ section.settings.original_background_color }}
+  }
+</style>
+
+{%- comment -%}
+  Include styles that are specific to all instances of the section
+  https://shopify.dev/docs/themes/sections#javascript-and-stylesheet-tags
+{%- endcomment -%}
+
+{% stylesheet %}
+  example-section { 
+    display: block;
+    padding: 15px;
+    background-color: var(--background-color);
+  }
+{% endstylesheet %}
+
+{%- comment -%}
+  Include section JS javascript tag
+  https://shopify.dev/docs/themes/sections#javascript-and-stylesheet-tags
+{%- endcomment -%}
+
+{% javascript %}
+  class ExampleSection extends HTMLElement {
+    constructor() {
+      super(); 
+      this.setRandomColor = this.setRandomColor.bind(this);
+    }
+
+    connectedCallback() {
+      if (this.dataset.enableRandomColor) {
+        this.button = this.querySelector('[data-button]'); 
+        this.button.style.display = 'initial';
+        this.button.addEventListener('click', this.setRandomColor);
+      }
+    }
+
+    disconnectedCallback() {
+      if (this.dataset.enableRandomColor) {
+        this.button.removeEventListener('click', this.setRandomColor);
+      }
+    }
+
+    setRandomColor(event) {
+      const randomColor = Math.floor(Math.random()*16777215).toString(16);
+      this.style.setProperty('--background-color', `#${randomColor}`); 
+    }
+  }  
+
+  customElements.define('example-section', ExampleSection);
+{% endjavascript %}
+
+{% schema %}
+  {
+    "name": "Example Section",
+    "settings": [
+      {
+        "type": "color",
+        "id": "original_background_color",
+        "label": "Background Color",
+        "default": "#ff1493"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_random_color",
+        "label": "Enable Random Color Button",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Title",
+        "default": "Check out this Custom Element Section!"
+      }
+    ],
+    "presets": [
+      {
+        "category": "Sections",
+        "name": "Example"
+      }
+    ]
+  }
+{% endschema %}
