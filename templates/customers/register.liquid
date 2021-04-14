@@ -1,1 +1,24 @@
-<!-- /templates/customers/register.liquid -->
+{% form 'create_customer' %} {{ form.errors | default_errors }}
+  <div>
+    <label for="first_name">First Name</label>
+    <input type="text" value="" name="customer[first_name]" size="30" />
+  </div>
+  
+  <div>
+    <label for="last_name">Last Name</label>
+    <input type="text" value="" name="customer[last_name]" size="30" />
+  </div>
+
+  <div>
+    <label for="email">Email Address</label>
+    <input type="email" value="" name="customer[email]" size="30" />
+  </div>
+  
+  <div>
+    <label for="password">Password</label>
+    <input type="password" value="" name="customer[password]" size="30" />
+  </div>
+  
+  <input type="submit" value="Create" />
+
+{% endform %} 
